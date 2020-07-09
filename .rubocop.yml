@@ -1,0 +1,10 @@
+inherit_gem:
+  rubocop-gooddog:
+    - config/default.yml
+
+AllCops:
+  TargetRubyVersion: 2.7.1
+  NewCops: enable
+
+Style/Lambda:
+  Enabled: false
