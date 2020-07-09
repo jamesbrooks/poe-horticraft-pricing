@@ -5,22 +5,27 @@ class Craft
     self.text = text
   end
 
-  def cheapest_price
-    return "" if prices.empty?
+  def cheapest_price(minimum_vouches: 0)
+    applicable_prices = prices.select { |p| p["vouche_count"] >= minimum_vouches }
 
-    currency = case prices[0]["price_coin"]
+    return "" if applicable_prices.empty?
+    cheapest_price = applicable_prices.first
+
+    currency = case cheapest_price["price_coin"]
     when "CHAOS" then "c"
     when "EXALT" then "ex"
-    else raise "unknown currency #{prices[0]["price_coin"]}"
+    else raise "unknown currency #{cheapest_price["price_coin"]}"
     end
 
-    "#{prices[0]["price"]}#{currency}"
+    "#{cheapest_price["price"]}#{currency}"
   end
 
-  def to_formatted_prices
-    return "(no data)" if prices.empty?
+  def to_formatted_prices(minimum_vouches: 0)
+    applicable_prices = prices.select { |p| p["vouche_count"] >= minimum_vouches }
 
-    prices.map do |v|
+    return "(no data)" if applicable_prices.empty?
+
+    applicable_prices.map do |v|
       "#{v["price"]} #{v["price_coin"]} - lvl: #{v["seed_lvl"]} vch: #{v["vouche_count"]}"
     end.join("\n")
   end
@@ -30,7 +35,7 @@ class Craft
       .headers("x-api-key" => HorticraftingPricing::FORBIDDEN_HARVEST_API_KEY)
       .post(HorticraftingPricing::FORBIDDEN_HARVEST_SEARCH_ENDPOINT, json: { "searchText" => text })
 
-    self.prices = JSON.parse(response.to_s)["results"].first(3)
+    self.prices = JSON.parse(response.to_s)["results"].first(HorticraftingPricing::NUM_RESULTS_PER_CRAFT)
   end
 
   class << self

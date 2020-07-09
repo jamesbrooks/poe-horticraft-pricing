@@ -6,7 +6,7 @@ class HorticraftingStation
     self.crafts = opts["craftedMods"].map { |craft| HorticraftingStationCraft.new(craft) }
   end
 
-  def suggested_pricing_note
-    "#" + [ crafts.map(&:cheapest_price), nil, nil, nil ].flatten.first(3).join("/")
+  def suggested_pricing_note(minimum_vouches: nil)
+    "#" + [ crafts.map { |c| c.cheapest_price(minimum_vouches: minimum_vouches) }, nil, nil, nil ].flatten.first(3).join("/")
   end
 end

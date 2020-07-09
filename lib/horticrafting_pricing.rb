@@ -6,10 +6,12 @@ class HorticraftingPricing
   STASH_TAB_CONTENTS_ENDPOINT = "https://www.pathofexile.com/character-window/get-stash-items?league=%s&tabs=0&tabIndex=%s&accountName=%s".freeze
   FORBIDDEN_HARVEST_SEARCH_ENDPOINT = "https://api.forbiddenharvest.com/search".freeze
   FORBIDDEN_HARVEST_API_KEY = "LUzWaKHO0i3ezyOgKocS63ZCh8bxAp3e8bzIteJP".freeze
+  NUM_RESULTS_PER_CRAFT = 3
 
-  attr_accessor :spinner, :poesessid, :account_name, :tab_id, :horticrafting_stations
+  attr_accessor :spinner, :minimum_vouches, :poesessid, :account_name, :tab_id, :horticrafting_stations
 
   def run
+    self.minimum_vouches = ask("Minimum Vouches Required (for determining price suggestions)", :minimum_vouches, 5).to_i
     self.poesessid = ask("POESESSID", :poesessid)
     self.account_name = ask("Account Name", :account_name)
     self.tab_id = select("What tab are your Horticrafting Stations in?", fetch_tab_list, :tab_id)
@@ -25,7 +27,7 @@ class HorticraftingPricing
 
   def display_suggested_station_pricing
     priced_stations = horticrafting_stations.each.with_object([]) do |station, matrix|
-      (matrix[station.y] ||= [])[station.x] = station.suggested_pricing_note
+      (matrix[station.y] ||= [])[station.x] = station.suggested_pricing_note(minimum_vouches: minimum_vouches)
     end
 
     priced_stations.each do |stations|
@@ -39,15 +41,15 @@ class HorticraftingPricing
     table = TTY::Table.new
 
     Craft.crafts.each_value do |craft|
-      table << [ craft.text, craft.to_formatted_prices ]
+      table << [ craft.text, craft.to_formatted_prices(minimum_vouches: minimum_vouches) ]
     end
 
     puts table.render :ascii, multiline: true, padding: [ 0, 1 ], border: { separator: :each_row }
   end
 
 private
-  def ask(question, config_key = nil)
-    TTY::Prompt.new.ask("#{question}:", default: (config.fetch(config_key) if config_key)).tap do |response|
+  def ask(question, config_key = nil, default = nil)
+    TTY::Prompt.new.ask("#{question}:", default: (config_key ? config.fetch(config_key) : default)).tap do |response|
       config.set(config_key, value: response) if config_key
     end
   end
