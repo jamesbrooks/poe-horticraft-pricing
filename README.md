@@ -2,7 +2,9 @@
 
 Automatically fetch Horticraft Stations from your stash and generate suggested pricing notes for them based on Horticrafting Station crafts currently listed for sale on forbiddenharvest.com.
 
-Caveats: Right now the automatic pricing is a very quick-and-dirty selection of the currently cheapest listed craft. I plan to enhance the capabilities based on looking at the N cheapest listings as well as considering craft ilevel. You can look at the raw data after the price suggestions to decide if you think the suggestion is reasonable.
+## Caveats
+
+Right now the automatic pricing is a very quick-and-dirty selection of the currently cheapest listed craft. I plan to enhance the capabilities based on looking at the N cheapest listings as well as considering craft ilevel. You can look at the raw data after the price suggestions to decide if you think the suggestion is reasonable.
 
 ## Requirements
 
