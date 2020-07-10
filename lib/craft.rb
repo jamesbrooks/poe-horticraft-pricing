@@ -8,7 +8,7 @@ class Craft
   def cheapest_price(minimum_vouches: 0)
     applicable_prices = prices.select { |p| p["vouche_count"] >= minimum_vouches }
 
-    return "" if applicable_prices.empty?
+    return "-" if applicable_prices.empty?
     cheapest_price = applicable_prices.first
 
     currency = case cheapest_price["price_coin"]

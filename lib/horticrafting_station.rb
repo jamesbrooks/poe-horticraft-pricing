@@ -7,6 +7,6 @@ class HorticraftingStation
   end
 
   def suggested_pricing_note(minimum_vouches: nil)
-    "#" + [ crafts.map { |c| c.cheapest_price(minimum_vouches: minimum_vouches) }, nil, nil, nil ].flatten.first(3).join("/")
+    "#" + [ crafts.map { |c| c.cheapest_price(minimum_vouches: minimum_vouches) }, Array.new(3, "-") ].flatten.first(3).join("/")
   end
 end
