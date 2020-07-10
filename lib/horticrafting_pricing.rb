@@ -31,7 +31,7 @@ class HorticraftingPricing
     end
 
     priced_stations.each do |stations|
-      puts "  " + stations.compact.map { |s| s.ljust(15) }.join
+      puts "  " + stations.map { |s| s.to_s.ljust(15) }.join
     end
 
     puts "\n\n"
