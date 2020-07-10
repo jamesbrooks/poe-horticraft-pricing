@@ -12,9 +12,11 @@ class Craft
     cheapest_price = applicable_prices.first
 
     currency = case cheapest_price["price_coin"]
+    when "ALCH" then "alch"
     when "CHAOS" then "c"
-    when "EXALT" then "ex"
-    else raise "unknown currency #{cheapest_price["price_coin"]}"
+    when "EX" then "ex"
+    when "MIRROR" then "mir"
+    else cheapest_price["price_coin"].downcase
     end
 
     "#{cheapest_price["price"]}#{currency}"
