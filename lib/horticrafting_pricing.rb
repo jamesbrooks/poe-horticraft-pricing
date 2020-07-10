@@ -87,7 +87,7 @@ private
     stop_spinner("(done)")
 
     payload = JSON.parse(response.to_s)
-    horticrafting_stations = payload["items"].select { |item| item["typeLine"] == "Horticrafting Station" }
+    horticrafting_stations = payload["items"].select { |item| item["typeLine"] == "Horticrafting Station" && item["craftedMods"] }
 
     horticrafting_stations.map { |data| HorticraftingStation.new(data) }
   end
