@@ -2,11 +2,13 @@ class Craft
   attr_accessor :text, :prices
 
   def initialize(text)
-    self.text = text
+    # Replace numbers with generic hashes (#)
+    self.text = text.gsub(/\d+/, "#").gsub(/'/, "")
   end
 
   def cheapest_price(minimum_vouches: 0)
     applicable_prices = prices.select { |p| p["vouche_count"] >= minimum_vouches }
+    applicable_prices = applicable_prices.first(HorticraftingPricing::NUM_RESULTS_PER_CRAFT)
 
     return "-" if applicable_prices.empty?
     cheapest_price = applicable_prices.first
@@ -24,6 +26,7 @@ class Craft
 
   def to_formatted_prices(minimum_vouches: 0)
     applicable_prices = prices.select { |p| p["vouche_count"] >= minimum_vouches }
+    applicable_prices = applicable_prices.first(HorticraftingPricing::NUM_RESULTS_PER_CRAFT)
 
     return "(no data)" if applicable_prices.empty?
 
@@ -37,7 +40,7 @@ class Craft
       .headers("x-api-key" => HorticraftingPricing::FORBIDDEN_HARVEST_API_KEY)
       .post(HorticraftingPricing::FORBIDDEN_HARVEST_SEARCH_ENDPOINT, json: { "searchText" => text })
 
-    self.prices = JSON.parse(response.to_s)["results"].first(HorticraftingPricing::NUM_RESULTS_PER_CRAFT)
+    self.prices = JSON.parse(response.to_s)["results"]
   end
 
   class << self
