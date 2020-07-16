@@ -3,7 +3,7 @@ class Craft
 
   def initialize(text)
     # Replace numbers with generic hashes (#)
-    self.text = text.gsub(/\d+/, "#").gsub(/'/, "")
+    self.text = text.gsub(/\d+/, "#").delete("'")
   end
 
   def cheapest_price(minimum_vouches: 0)
@@ -11,6 +11,7 @@ class Craft
     applicable_prices = applicable_prices.first(HorticraftingPricing::NUM_RESULTS_PER_CRAFT)
 
     return "-" if applicable_prices.empty?
+
     cheapest_price = applicable_prices.first
 
     currency = case cheapest_price["price_coin"]
