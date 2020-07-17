@@ -36,10 +36,10 @@ class Craft
     end.join("\n")
   end
 
-  def fetch_prices
-    response = HTTP
+  def fetch_prices(conn)
+    response = conn
       .headers("x-api-key" => HorticraftingPricing::FORBIDDEN_HARVEST_API_KEY)
-      .post(HorticraftingPricing::FORBIDDEN_HARVEST_SEARCH_ENDPOINT, json: { "searchText" => text })
+      .post("/search", json: { "searchText" => text })
 
     self.prices = JSON.parse(response.to_s)["results"]
   end
@@ -54,19 +54,16 @@ class Craft
     end
 
     def fetch_pricing
-      # raise crafts.inspect
       bar = TTY::ProgressBar.new("Fetching craft pricing [:bar] (:current / :total)", total: crafts.size, clear: true)
-      pool = Thread.pool(10)
+      pool = ConnectionPool.new(size: HorticraftingPricing::HTTP_WORKER_POOL_SIZE, timeout: 60) { HTTP.persistent("https://api.forbiddenharvest.com") }
       semaphore = Mutex.new
 
-      crafts.each_value do |craft|
-        pool.process do
-          craft.fetch_prices
+      crafts.each_value.map do |craft|
+        Thread.new do
+          pool.with { |conn| craft.fetch_prices(conn) }
           semaphore.synchronize { bar.advance(1) }
         end
-      end
-
-      pool.shutdown
+      end.each(&:join)
     end
   end
 end

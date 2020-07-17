@@ -1,12 +1,10 @@
-require 'thread/pool'
-
 class HorticraftingPricing
   LEAGUE = "Harvest".freeze
   STASH_TABS_ENDPOINT = "https://www.pathofexile.com/character-window/get-stash-items?league=%s&tabs=1&accountName=%s".freeze
   STASH_TAB_CONTENTS_ENDPOINT = "https://www.pathofexile.com/character-window/get-stash-items?league=%s&tabs=0&tabIndex=%s&accountName=%s".freeze
-  FORBIDDEN_HARVEST_SEARCH_ENDPOINT = "https://api.forbiddenharvest.com/search".freeze
   FORBIDDEN_HARVEST_API_KEY = "LUzWaKHO0i3ezyOgKocS63ZCh8bxAp3e8bzIteJP".freeze
   NUM_RESULTS_PER_CRAFT = 3
+  HTTP_WORKER_POOL_SIZE = 15
 
   attr_accessor :spinner, :minimum_vouches, :poesessid, :account_name, :tab_id, :horticrafting_stations
 
